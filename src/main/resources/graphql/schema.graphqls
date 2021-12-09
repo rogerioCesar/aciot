@@ -1,0 +1,21 @@
+type Point {
+	id: ID!
+	typepoint: String!
+	value: String!
+	name: String!
+}
+
+# Root
+type Query {
+	findAllPoints: [Point]!
+	
+}
+
+
+type Mutation {
+	createPoint(typepoint: String!, value: String! name: String!): Point!	
+}
+
+type Subscription {
+    points: [Point]
+}
