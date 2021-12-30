@@ -1,15 +1,23 @@
 package com.rctecnologia.aciot.authz;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
+import org.springframework.http.HttpHeaders;
+
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.websocket.server.HandshakeRequest;
 
-import com.rctecnologia.aciot.model.Point;
-import com.rctecnologia.aciot.model.User;
-import com.rctecnologia.aciot.repository.PointRepository;
-import com.rctecnologia.aciot.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.rctecnologia.aciot.model.Politica;
+import com.rctecnologia.aciot.repository.PoliticaRepository;
+
+import graphql.kickstart.execution.subscriptions.SubscriptionSession;
+import graphql.kickstart.execution.subscriptions.apollo.ApolloSubscriptionConnectionListener;
+import graphql.kickstart.execution.subscriptions.apollo.OperationMessage;
 
 /*
  * Algoritmo
@@ -19,33 +27,70 @@ import com.rctecnologia.aciot.repository.UserRepository;
  * Verifica no banco as políticas
  * retorna sim ou não.
  */
+@Component
+public class Authz implements ApolloSubscriptionConnectionListener {
+	
+	@Autowired
+	PoliticaRepository politicaRepository;
+	
+	@Autowired
+	private Authenticator authenticator;
+	
 
-public class Authz {
 
-	Point point;
-	User usuario;
-    
-    @Autowired
-    private PointRepository pointRepository;
-    
-    @Autowired
-    private UserRepository userRepository;
-    
-	public void authorization(String topic, Long id){
-		Calendar cal = Calendar.getInstance();
+	@Override
+	  public void onConnect(SubscriptionSession session, OperationMessage message) {
 		
-		String day =String.valueOf(cal.get(Calendar.DAY_OF_WEEK));
-				
-		String hour =  new SimpleDateFormat("HH").format(Calendar.getInstance().getTime());
-		
-		Optional<User> user = userRepository.findById(id);
-		
-		usuario = user.get();
-		
-		String role = usuario.getRole();
-		
-		
-		
-		
-	}
+		Map<String, String> payload = (Map<String, String>) message.getPayload();
+	    System.out.println("Payload: "+payload);
+	    if (payload != null) {
+	      // Authenticate using the value of the key Authorization of the payload
+	      authenticator.doAuthenticate(payload.get(HttpHeaders.AUTHORIZATION)); 
+	    }
+	    
+	   
+	  }
+
+	  @Override	
+	  public void onStart(SubscriptionSession session, OperationMessage message) {
+		  
+		  /*
+		    List<Politica> politicas = new ArrayList<Politica>();
+			
+		    politicaRepository.findAll().forEach(politicas::add);
+		    
+		    politicas.forEach(politic -> System.out.println("id = "+politic.getId()));
+		    politicas.forEach(politic -> System.out.println("name = "+politic.getName()));
+		    politicas.forEach(politic -> System.out.println("temperatura = "+politic.getTemperatura()));
+		    politicas.forEach(politic -> System.out.println("hora = "+politic.getHora()));
+	        politicas.forEach(politic -> System.out.println("dia = "+politic.getDia()));  
+	        politicas.forEach(politic -> System.out.println("point = "+politic.getPoint()));
+	        politicas.forEach(politic -> System.out.println("role = "+politic.getRole()));
+	        politicas.forEach(politic -> System.out.println("localizacao = "+politic.getLocalizacao()));
+	        politicas.forEach(politic -> System.out.println("idade = "+politic.getIdade()));
+	        politicas.forEach(politic -> System.out.println("conectividade = "+politic.getConectividade()));
+	        politicas.forEach(politic -> System.out.println("bateria = "+politic.getBateria()));
+	        politicas.forEach(politic -> System.out.println("dispositivo = "+politic.getDispositivo()));  
+	   
+			*/
+	      
+	      // Retrieve the handshake request from the current subscription session
+	      HandshakeRequest request = (HandshakeRequest) session.getUserProperties()
+	        .get(HandshakeRequest.class.getName());
+	      
+	      System.out.println(session.getUserProperties().get(HandshakeRequest.class.getName()));
+	      
+	      
+	      
+	      /* Check for an Authorization header in the handshake request and use it to authenticate */
+	      Optional.ofNullable(request)
+	          .map(HandshakeRequest::getHeaders)
+	          .map(headers -> headers.get(HttpHeaders.AUTHORIZATION))
+	          .filter(list -> !list.isEmpty())
+	          .map(list -> list.get(0))
+	          .ifPresent(authHeaderValue -> authenticator.doAuthenticate(authHeaderValue));
+	    }
+
+
+	
 }

@@ -27,7 +27,7 @@ public class TopicSubscriptionInterception implements ChannelInterceptor{
 
 	    @Override
 	    public Message<?> postReceive(Message<?> message, MessageChannel chanenel) {
-	    	System.out.println("Olápolpolç");
+	    	System.out.println("Messagem");
 	        return message;
 	        
 	    }
@@ -39,6 +39,7 @@ public class TopicSubscriptionInterception implements ChannelInterceptor{
 
 	    @Override
 	    public boolean preReceive(MessageChannel channel) {
+	    	
 	        return true;
 	        
 	    }
@@ -57,7 +58,7 @@ public class TopicSubscriptionInterception implements ChannelInterceptor{
 			
 			if(politicas.isEmpty()) {System.out.println("políticas vazias");
 			System.out.println("Validate subscription for {} to topic  "+"Usuario - "+topicDestination);
-			return false;
+			return true;
 
 			}
 	        //Validation logic coming here

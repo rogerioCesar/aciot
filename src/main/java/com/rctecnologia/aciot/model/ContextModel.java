@@ -1,15 +1,6 @@
 package com.rctecnologia.aciot.model;
 
-import javax.persistence.Id;
-
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-@Document 
-public class Politica {
-	@Id
-	private String id;
+public class ContextModel {
 	
     private String name;
 	
@@ -23,7 +14,7 @@ public class Politica {
 	
 	private String role;
 	
-	private String localizacao;
+	private String localização;
 	
 	private String idade;
 	
@@ -34,30 +25,20 @@ public class Politica {
 	private String dispositivo;
 	
 	
-	
-	
 
-	public Politica(String name, String temperatura, String hora, String dia, String point, String role,
-			String localizacao, String idade, String conectividade, String bateria, String dispositivo) {
+	public ContextModel(String name, String temperatura, String hora, String dia, String point, String role,
+			String localização, String idade, String conectividade, String bateria, String dispositivo) {
 		this.name = name;
 		this.temperatura = temperatura;
 		this.hora = hora;
 		this.dia = dia;
 		this.point = point;
 		this.role = role;
-		this.localizacao = localizacao;
+		this.localização = localização;
 		this.idade = idade;
 		this.conectividade = conectividade;
 		this.bateria = bateria;
 		this.dispositivo = dispositivo;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -108,12 +89,12 @@ public class Politica {
 		this.role = role;
 	}
 
-	public String getLocalizacao() {
-		return localizacao;
+	public String getLocalização() {
+		return localização;
 	}
 
-	public void setLocalizacao(String localizacao) {
-		this.localizacao = localizacao;
+	public void setLocalização(String localização) {
+		this.localização = localização;
 	}
 
 	public String getIdade() {
@@ -148,6 +129,7 @@ public class Politica {
 		this.dispositivo = dispositivo;
 	}
 	
-
 	
+	
+
 }
