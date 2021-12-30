@@ -16,13 +16,7 @@ public class AciotApplication {
 	
 
 	public static void main(String[] args) {
-		SpringApplication.run(AciotApplication.class, args);
-		
-		
-		 
-			 		
-
-		
+		SpringApplication.run(AciotApplication.class, args);		
 	}
 
 }

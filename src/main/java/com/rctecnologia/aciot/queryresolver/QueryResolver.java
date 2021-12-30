@@ -8,6 +8,14 @@ import com.rctecnologia.aciot.repository.PointRepository;
 
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
+
+/**
+ * Classe responsável por controlar (Resolver), via graphql, as ações de queries no ambiente
+ * As ações de queries basicamente são consultas simples ou complexas de acordo com a finalidade de aquisição de dados.
+ * 
+ * @author rogerio
+ *
+ */
 @Component
 public class QueryResolver implements GraphQLQueryResolver {
 	

@@ -6,6 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Modelo de ponto para controle de elemento/entidade/recurso/ no ambiente IoT
+ * @author rogerio
+ *
+ */
+
 @Entity
 public class Point {
 	

@@ -6,6 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+
+/**
+ * Modelo de usuário para controle de acesso.
+ * @author rogerio
+ *
+ */
 @Entity
 public class User {
 	

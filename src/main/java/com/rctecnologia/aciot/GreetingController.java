@@ -15,7 +15,9 @@ import com.google.gson.Gson;
 import com.rctecnologia.aciot.model.Point;
 import com.rctecnologia.aciot.repository.PointRepository;
 
-
+/**
+ * Classe utilizada para configuração e serviço do broker mqtt
+ */
 
 @Controller
 public class GreetingController {

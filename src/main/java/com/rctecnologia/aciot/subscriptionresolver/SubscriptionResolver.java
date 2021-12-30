@@ -27,6 +27,15 @@ import com.rctecnologia.aciot.repository.PoliticaRepository;
 
 import graphql.kickstart.tools.GraphQLSubscriptionResolver;
 
+
+/**
+ * Classe responsável por controlar (Resolver), via graphql, as ações de subscriptions no ambiente IoT
+ * As ações de subscriptions proporcionam uma inscrição no tópico e publicações em tempo real
+ * para os usuários inscritos no tópico, de acordo com as políticas cadastradas.
+ * 
+ * @author rogerio
+ *
+ */
 @Component
 public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 

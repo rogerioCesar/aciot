@@ -1,5 +1,12 @@
 package com.rctecnologia.aciot.model;
 
+/**
+ * Modelo de classe para definição de contexto.
+ * Serve de modelo para comparação com as políticas cadastradas
+ * @author rogerio
+ *
+ */
+
 public class ContextModel {
 	
     private String name;

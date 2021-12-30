@@ -6,6 +6,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+
+/**
+ * Modelo de políticas com atributos do contexto a serem definidos para acesso.
+ * As políticas são armazenadas em ambiente NoSQL -> MongoDB
+ * @author rogerio
+ *
+ */
 @Document 
 public class Politica {
 	@Id

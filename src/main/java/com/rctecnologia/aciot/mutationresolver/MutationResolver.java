@@ -8,9 +8,17 @@ import com.rctecnologia.aciot.repository.PointRepository;
 
 import graphql.kickstart.tools.GraphQLMutationResolver;
 
+/**
+ * Classe responsável por controlar (Resolver), via graphql, as ações de mutations no ambeinte
+ * As ações de mutations podem ser atualização, exclusão e inserção de dados no BD
+ * 
+ * @author rogerio
+ *
+ */
 @Component
 public class MutationResolver implements GraphQLMutationResolver {
 
+	@Autowired
 	private PointRepository pointRepository;
 
 	@Autowired
