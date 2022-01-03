@@ -1,24 +1,19 @@
 package com.rctecnologia.aciot.subscriptionresolver;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
-import java.util.function.Predicate;
-
-
-import org.reactivestreams.Publisher;
-
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.rctecnologia.aciot.model.ContextModel;
 import com.rctecnologia.aciot.model.Point;
 import com.rctecnologia.aciot.model.Politica;
@@ -53,7 +48,7 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 	@PreAuthorize("isAuthenticated()")	
 	public  Publisher<List<Point>> points(){
 		return subscriber->	Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {		
-			/* Preenchimento com políticas.
+			/* Preenchimento com políticas aleatória.
 			*
 			*
 			Politica politica = new Politica(
@@ -100,28 +95,26 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 
 			
 			
-			//método para buscar pontos.
+			//método para buscar pontos acessíveis.			
+			pointsWithAllowedAccess();			
 			
-			System.out.println("Printei "+pointsWithAllowedAccess().get(0).getPoint());
-			
-			
-			//disponibliza dados sobre os pontos.
-			subscriber.onNext(points);
-			
-			
+			//disponibliza dados sobre os pontos à cada 2 segundos.
+			subscriber.onNext(pointsWithAllowedAccess());			
 			
 		}, 0, 2, TimeUnit.SECONDS);				
 	
 	}
 	
 
-	//Método que retorna os pontos disponíveis de acordo com as políticas.
-	
-	public List<Politica> pointsWithAllowedAccess() {
+
+	/**
+	 * Método que retorna os pontos disponíveis de acordo com as políticas.
+	*/	
+	public List<Point> pointsWithAllowedAccess() {
 		//
 		Point p = new Point();
 		
-		List<Point> points = pointRepository.findAll();			
+		List<Point> points = new ArrayList<Point>();
 		
 		List<Politica> politicas = politicaRepository.findAll();
 		
@@ -143,10 +136,16 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
         }).collect(Collectors.toList());
 		
 		ContextModel contextModel = new ContextModel(null, null, null, null, null, null, null, null, null, null, null);
-		contextModel.setTemperatura(">30ss");
-		contextModel.setConectividade("onw");
+		contextModel.setTemperatura(">30");
+		contextModel.setConectividade("on");
+
+	
 		
 		
+		/**
+		 * MODELO USANDO LISTAS
+		 */
+		/*
 		System.out.println(contextModel.getTemperatura());
 		politicas.forEach(System.out::println);
 		
@@ -154,7 +153,7 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 		 
 		 politicasDisponiveis = politicas.stream()
 				 .filter(p1 -> p1
-						 .getBateria()
+						 .getTemperatura()
 						 .contains(contextModel.getTemperatura()) 		|| contextModel.getTemperatura() == null				  
 						 
 						 && p1
@@ -163,8 +162,8 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 
 				 .collect(Collectors.toList());
 		 
-		 /*
-myList.stream().filter(x -> x.size() > 10 && x -> x.isCool())
+		 
+			myList.stream().filter(x -> x.size() > 10 && x -> x.isCool())
 		    politicasDisponiveis = politicas.stream()
 		        .filter( p1 -> {
 		            return result.stream()
@@ -175,10 +174,51 @@ myList.stream().filter(x -> x.size() > 10 && x -> x.isCool())
 
 		//politicasDisponiveis.forEach(pi -> System.out.println("Novo aqui: "+politicasDisponiveis.get(0).getConectividade()));
 		
+		/**
+		 * MODELO USANDO JSON
+		 */		
+		
+		/**
+		 * -Constrói json
+		 * -Instancia contexto e pontos para acesso.
+		 * -Verica pontos para acesso, de acordo com as políticas e contexto no momento.
+		 */
+		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+		
+		String contextModelJson = gson.toJson(contextModel);
+		
+		List<Point> pointsAccess =new ArrayList<Point>() ;	
 		
 		
+		String politicasJson = gson.toJson(politicas);
 		
-		return politicasDisponiveis;
+		Politica[] politicaArray = gson.fromJson(politicasJson, Politica[].class);  
+		int i=0;
+		for(Politica polis : politicaArray) {		
+			if(polis.getBateria() == contextModel.getBateria() 
+					|| (polis.getBateria()==null || polis.getBateria().isEmpty()))  i++; 
+			
+			if(polis.getConectividade().equals(contextModel.getConectividade()) || (polis.getConectividade()==null 
+					|| polis.getConectividade().isEmpty())) i++;
+			
+			if(polis.getDispositivo()== contextModel.getDispositivo() || polis.getDispositivo()==null) i++;
+			if(polis.getHora()== contextModel.getHora() || polis.getHora()==null) i++;
+			if(polis.getIdade()== contextModel.getIdade() || polis.getIdade()==null) i++;
+			if(polis.getLocalizacao()== contextModel.getLocalização() || polis.getLocalizacao()==null) i++;
+			if(polis.getPoint()== contextModel.getPoint() || polis.getPoint()==null) i++;
+			if(polis.getRole()== contextModel.getRole() || polis.getRole()==null) i++;
+			if(polis.getTemperatura()== contextModel.getTemperatura() || polis.getTemperatura()==null) i++;
+			if(polis.getDia()== contextModel.getDia() || polis.getDia()==null) i++;
+			
+			if(i==9) {				
+		        p = pointRepository.findByName(String.valueOf(polis.getPoint().toString()));
+				pointsAccess.add(p);
+			}
+		}
+					
+		//retorna os pontos acessíveis.
+		return pointsAccess;
+		
 	}
 		
 	

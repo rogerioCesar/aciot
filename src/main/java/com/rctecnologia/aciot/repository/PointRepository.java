@@ -1,8 +1,12 @@
 package com.rctecnologia.aciot.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.rctecnologia.aciot.model.Point;
+import com.rctecnologia.aciot.model.Politica;
 
 
 /**
@@ -13,4 +17,5 @@ import com.rctecnologia.aciot.model.Point;
  */
 public interface PointRepository extends JpaRepository<Point, Long> {
 
+	Point findByName(String name);
 }
