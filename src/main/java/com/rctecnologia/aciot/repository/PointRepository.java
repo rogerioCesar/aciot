@@ -3,10 +3,10 @@ package com.rctecnologia.aciot.repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.rctecnologia.aciot.model.Point;
-import com.rctecnologia.aciot.model.Politica;
+
 
 
 /**
@@ -15,7 +15,7 @@ import com.rctecnologia.aciot.model.Politica;
  * @author rogerio
  *
  */
-public interface PointRepository extends JpaRepository<Point, Long> {
+public interface PointRepository extends MongoRepository<Point, Long> {
 
 	Point findByName(String name);
 }

@@ -1,5 +1,5 @@
 type Point {
-	id: ID!
+	id: ID
 	typepoint: String!
 	value: String!
 	name: String!

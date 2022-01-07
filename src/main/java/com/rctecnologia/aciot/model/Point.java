@@ -1,11 +1,10 @@
 package com.rctecnologia.aciot.model;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Modelo de ponto para controle de elemento/entidade/recurso/ no ambiente IoT
@@ -13,27 +12,29 @@ import javax.persistence.Table;
  *
  */
 
-@Entity
-@Table
+//@Entity
+//@Table
+
+@Document 
 public class Point {
 	
 	  @Id
-	  @GeneratedValue(strategy = GenerationType.AUTO)
-	  private Long id;
+	  
+	  private String id;
 	 
-	  @Column(name = "typepoint")
+	  //@Column(name = "typepoint")
 	  private String typepoint;
 	  
-	  @Column(name = "value")
+	  //@Column(name = "value")
 	  private String value;
 
-	  @Column(name = "name")
+	  //@Column(name = "name")
 	  private String name;	  
 	  
 	  public Point () {		  
 	  }
 	  
-	  public Point (Long id) {
+	  public Point (String id) {
 		  this.id = id;
 	  }	  
 	  
@@ -43,11 +44,11 @@ public class Point {
 			this.name = name;
 		}
 
-		public Long getId() {
+		public String getId() {
 			return id;
 		}
 
-		public void setId(Long id) {
+		public void setId(String id) {
 			this.id = id;
 		}
 

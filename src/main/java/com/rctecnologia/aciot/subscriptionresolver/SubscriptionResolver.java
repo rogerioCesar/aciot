@@ -1,7 +1,9 @@
 package com.rctecnologia.aciot.subscriptionresolver;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +19,7 @@ import com.google.gson.GsonBuilder;
 import com.rctecnologia.aciot.model.ContextModel;
 import com.rctecnologia.aciot.model.Point;
 import com.rctecnologia.aciot.model.Politica;
+import com.rctecnologia.aciot.model.User;
 import com.rctecnologia.aciot.repository.PointRepository;
 import com.rctecnologia.aciot.repository.PoliticaRepository;
 
@@ -37,6 +40,8 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 	@Autowired
 	PointRepository pointRepository;
 	
+	private final Map<String, User> users = new HashMap<>();
+	
 	@Autowired
 	PoliticaRepository politicaRepository;
 
@@ -44,11 +49,15 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 	public SubscriptionResolver(PointRepository pointRepository, PoliticaRepository politicaRepository) {
 	}
 	
+	public User validateToken(String token) {
+	    return users.get(token);
+	  }
+	
 	
 	@PreAuthorize("isAuthenticated()")	
 	public  Publisher<List<Point>> points(){
 		return subscriber->	Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {		
-			/* Preenchimento com políticas aleatória.
+			/* Preenchimento com política aleatória.
 			*
 			*
 			Politica politica = new Politica(

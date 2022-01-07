@@ -35,7 +35,15 @@ public class MutationResolver implements GraphQLMutationResolver {
 		point.setValue(value);
 		point.setName(name);
 		
-		pointRepository.save(point);
+		System.out.println("tyoe"+ typepoint);
+		
+		try {
+			pointRepository.save(point);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		
 		
 		return point;
 	}
