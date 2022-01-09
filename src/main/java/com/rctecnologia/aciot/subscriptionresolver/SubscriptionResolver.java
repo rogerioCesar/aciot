@@ -4,18 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.rctecnologia.aciot.model.ContextModel;
 import com.rctecnologia.aciot.model.Point;
 import com.rctecnologia.aciot.model.Politica;
@@ -97,13 +92,6 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 			  *
 			  */
 				
-			List<Point> points = pointRepository.findAll();			
-			
-			List<Politica> politicas = politicaRepository.findAll();
-			
-
-			
-			
 			//método para buscar pontos acessíveis.			
 			pointsWithAllowedAccess();			
 			
@@ -120,90 +108,33 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 	 * Método que retorna os pontos disponíveis de acordo com as políticas.
 	*/	
 	public List<Point> pointsWithAllowedAccess() {
-		//
-		Point p = new Point();
 		
-		List<Point> points = new ArrayList<Point>();
+		// ponto auxiliar
+		List<Point> p = new ArrayList<Point>();		
 		
+		//todas as políticas
 		List<Politica> politicas = politicaRepository.findAll();
-		
-		List<Politica> result = politicas.stream().map(temp -> {
-            Politica obj = new Politica(null, null, null, null, null, null, null, null, null, null, null);
-            obj.setId(temp.getId());
-            obj.setBateria(temp.getBateria());
-            obj.setConectividade(temp.getConectividade());
-            obj.setDispositivo(temp.getDispositivo());
-		    obj.setHora(temp.getHora());
-		    obj.setIdade(temp.getIdade());
-		    obj.setLocalizacao(temp.getLocalizacao());
-		    obj.setPoint(temp.getPoint());
-		    obj.setRole(temp.getRole());
-		    obj.setTemperatura(temp.getTemperatura());
-            obj.setDia(temp.getDia());          
-            
-            return obj;
-        }).collect(Collectors.toList());
-		
-		ContextModel contextModel = new ContextModel(null, null, null, null, null, null, null, null, null, null, null);
-		contextModel.setTemperatura(">30");
-		contextModel.setConectividade("on");
-
-	
-		
-		
-		/**
-		 * MODELO USANDO LISTAS
-		 */
-		/*
-		System.out.println(contextModel.getTemperatura());
-		politicas.forEach(System.out::println);
-		
-		 List<Politica> politicasDisponiveis;
-		 
-		 politicasDisponiveis = politicas.stream()
-				 .filter(p1 -> p1
-						 .getTemperatura()
-						 .contains(contextModel.getTemperatura()) 		|| contextModel.getTemperatura() == null				  
-						 
-						 && p1
-						 .getConectividade()
-						 .contains(contextModel.getConectividade()) || contextModel.getConectividade() == null )
-
-				 .collect(Collectors.toList());
-		 
-		 
-			myList.stream().filter(x -> x.size() > 10 && x -> x.isCool())
-		    politicasDisponiveis = politicas.stream()
-		        .filter( p1 -> {
-		            return result.stream()
-		                    .map(Politica::getBateria)
-		                    //Compara se atende ao requisito da politica com relação a bateria
-		                    .anyMatch(i2 -> i2.equals(p1.getBateria()))	;
-		        }).collect(Collectors.toList());*/
-
-		//politicasDisponiveis.forEach(pi -> System.out.println("Novo aqui: "+politicasDisponiveis.get(0).getConectividade()));
 		
 		/**
 		 * MODELO USANDO JSON
-		 */		
-		
-		/**
 		 * -Constrói json
 		 * -Instancia contexto e pontos para acesso.
 		 * -Verica pontos para acesso, de acordo com as políticas e contexto no momento.
-		 */
-		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+		 */			
 		
-		String contextModelJson = gson.toJson(contextModel);
-		
+		//pontos acessíveis
 		List<Point> pointsAccess =new ArrayList<Point>() ;	
 		
+		//modelo de contexto instanciado
+		ContextModel contextModel = new ContextModel(null, null, null, null, null, null, null, null, null, null, null);
+		contextModel.setTemperatura(">30");
+		contextModel.setConectividade("on");
 		
-		String politicasJson = gson.toJson(politicas);
-		
-		Politica[] politicaArray = gson.fromJson(politicasJson, Politica[].class);  
 		int i=0;
-		for(Politica polis : politicaArray) {		
+		
+		for(Politica polis : politicas) {		
+			
+
 			if(polis.getBateria() == contextModel.getBateria() 
 					|| (polis.getBateria()==null || polis.getBateria().isEmpty()))  i++; 
 			
@@ -219,9 +150,13 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 			if(polis.getTemperatura()== contextModel.getTemperatura() || polis.getTemperatura()==null) i++;
 			if(polis.getDia()== contextModel.getDia() || polis.getDia()==null) i++;
 			
-			if(i==9) {				
-		        p = pointRepository.findByName(String.valueOf(polis.getPoint().toString()));
-				pointsAccess.add(p);
+			if(i==9) {	
+
+		        p = pointRepository.findByName(String.valueOf(polis.getPoint().toString()));      
+
+		        for (Point ponto : p) {
+					pointsAccess.add(ponto);
+				}		        
 			}
 		}
 					

@@ -17,5 +17,5 @@ import com.rctecnologia.aciot.model.Point;
  */
 public interface PointRepository extends MongoRepository<Point, Long> {
 
-	Point findByName(String name);
+	List<Point> findByName(String name);
 }
