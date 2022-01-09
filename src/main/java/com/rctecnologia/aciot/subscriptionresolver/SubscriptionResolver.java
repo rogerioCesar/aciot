@@ -1,5 +1,7 @@
 package com.rctecnologia.aciot.subscriptionresolver;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +54,7 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 	@PreAuthorize("isAuthenticated()")	
 	public  Publisher<List<Point>> points(){
 		return subscriber->	Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {		
+			
 			/* Preenchimento com política aleatória.
 			*
 			*
@@ -92,12 +95,37 @@ public class SubscriptionResolver implements GraphQLSubscriptionResolver {
 			  *
 			  */
 				
+			long startTime = System.nanoTime();
 			//método para buscar pontos acessíveis.			
 			pointsWithAllowedAccess();			
 			
 			//disponibliza dados sobre os pontos à cada 2 segundos.
 			subscriber.onNext(pointsWithAllowedAccess());			
+			long endTime = System.nanoTime();
 			
+			long timeElapsed = endTime - startTime;
+			 
+	        System.out.println("Execution time in nanoseconds: " + timeElapsed);
+	        System.out.println("Execution time in milliseconds: " + timeElapsed / 1000000);
+	        
+	        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+
+	        System.out.println(String.format("Initial memory: %.2f KB", 
+
+	          (double)memoryMXBean.getHeapMemoryUsage().getInit() /1024));
+
+	        System.out.println(String.format("Used heap memory: %.2f KB", 
+
+	          (double)memoryMXBean.getHeapMemoryUsage().getUsed() /1024));
+
+	        System.out.println(String.format("Max heap memory: %.2f KB", 
+
+	          (double)memoryMXBean.getHeapMemoryUsage().getMax() /1024));
+
+	        System.out.println(String.format("Committed memory: %.2f KB", 
+
+	          (double)memoryMXBean.getHeapMemoryUsage().getCommitted() /1024));
+	        
 		}, 0, 2, TimeUnit.SECONDS);				
 	
 	}
